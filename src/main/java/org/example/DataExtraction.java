@@ -28,7 +28,7 @@ public class DataExtraction {
                 int sfarsit = bucata.indexOf("</a>");
 
                 if (inceput != -1 && sfarsit != -1  && inceput < sfarsit) {
-                    String linie = bucata.substring(inceput + 1, sfarsit);
+                    String linie = bucata.substring(inceput + 1, sfarsit).trim();
 
                     if(!linie.isEmpty() && !linie.contains("<") && linie.length() < 35){
 
