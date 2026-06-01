@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 public class DataExporter {
@@ -27,5 +28,15 @@ public class DataExporter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void newExcel(List<String> date, String numeFisier){
+        File folder = new File("Output");
+        if(!folder.exists()){
+            folder.mkdir();
+        }
+        String cale = "Output" + File.separator + numeFisier;
+        Salveaza(date, cale);
+
     }
 }
