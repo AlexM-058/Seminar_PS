@@ -1,43 +1,43 @@
 package org.example;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
+
 public class DataExtraction {
 
     List<String> extrageMeniu(String url) {
         List<String> liniiMeniu = new ArrayList<>();
 
-        try{
-           HttpClient client = HttpClient.newHttpClient();
-           HttpRequest request = HttpRequest.newBuilder()
-                   .uri(URI.create(url))
-                   .build();
+        try {
+            Document doc = Jsoup.connect(url).get();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            String html = response.body();
+            // 1. Căutăm butonul de start al meniului ("Despre")
+            for (Element a : doc.select("a")) {
+                if (a.text().trim().equalsIgnoreCase("Despre")) {
 
-            String[] bucatiHtml = html.split("<a ");
+                    // 2. Odată găsit, luăm lista mamă (ul-ul principal) în care se află
+                    Element ulPrincipal = a.closest("ul");
 
-            for (String bucata : bucatiHtml) {
+                    if (ulPrincipal != null) {
+                        // 3. Secretul: folosim "> li > a" ca să luăm DOAR nivelul principal, fără submeniuri!
+                        Elements linkuri = ulPrincipal.select("> li > a");
 
-                int inceput = bucata.indexOf(">");
-                int sfarsit = bucata.indexOf("</a>");
+                        for (Element link : linkuri) {
+                            String linie = link.text().trim();
 
-                if (inceput != -1 && sfarsit != -1  && inceput < sfarsit) {
-                    String linie = bucata.substring(inceput + 1, sfarsit).trim();
-
-                    if(!linie.isEmpty() && !linie.contains("<") && linie.length() < 35){
-
-                    liniiMeniu.add(linie);
+                            if (!linie.isEmpty() && linie.length() < 35) {
+                                liniiMeniu.add(linie);
+                            }
+                        }
                     }
+                    // Oprim for-ul, ne-am făcut treaba
+                    break;
                 }
-
             }
-
 
         } catch (Exception e) {
             System.out.println("Eroare la extragerea: " + e.getMessage());

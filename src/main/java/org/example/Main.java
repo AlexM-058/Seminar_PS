@@ -1,39 +1,32 @@
 package org.example;
 
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
+
     public static void main(String[] args) {
-
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Introdu numele dorit pentru fișierul Excel (ex: meniu_ulbs): ");
-        String numeFisier = scanner.nextLine().trim();
-
-        // Plasă de siguranță: dacă dă doar Enter din greșeală
-        if (numeFisier.isEmpty()) {
-            numeFisier = "meniu_default";
-            System.out.println("Nu ai introdus un nume. Se va folosi: " + numeFisier);
+        // Cerința prof: "al cărui path (nume) este primit ca și prim argument"
+        if (args.length == 0) {
+            System.out.println("Eroare: Trebuie să oferiți numele fișierului din Program Arguments (ex: meniu_ulbs.xlsx)");
+            return;
         }
-        if (!numeFisier.endsWith(".xlsx")) {
-            numeFisier += ".xlsx";
-        }
-        String urlFacultate = "https://inginerie.ulbsibiu.ro/";
 
-        System.out.println("Start extragere pentru : " + urlFacultate);
+        String numeFisier = args[0];
 
-        DataExtraction extraction = new DataExtraction();
-        List<String> liniiMeniu = extraction.extrageMeniu(urlFacultate);
+        // Cerința prof: site-ul principal
+        String url = "https://ulbsibiu.ro/";
 
-        if(liniiMeniu.isEmpty()){
-            System.out.println("Nu s-au gasit linii de meniu!");
+        System.out.println("Extragem meniul de pe: " + url);
+
+        DataExtraction extractor = new DataExtraction();
+        List<String> listaMeniu = extractor.extrageMeniu(url);
+
+        if (listaMeniu.isEmpty()) {
+            System.out.println("Nu s-au găsit linii de meniu!");
         } else {
-            System.out.println("Am găsit " + liniiMeniu.size() + " elemente. Trecem la salvare...");
+            System.out.println("Am găsit " + listaMeniu.size() + " elemente. Salvăm...");
             DataExporter exporter = new DataExporter();
-            exporter.newExcel(liniiMeniu, numeFisier);
+            exporter.Salveaza(listaMeniu, numeFisier);
         }
     }
-
-
 }
