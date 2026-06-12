@@ -13,31 +13,19 @@ public class DataExtraction {
         List<String> liniiMeniu = new ArrayList<>();
 
         try {
-            Document doc = Jsoup.connect(url).get();
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0")
+                    .referrer("https://ulbsibiu.ro/")
+                    .timeout(15_000)
+                    .get();
+          Elements elemente = doc.select("#primary-menu > li > a.nav-link");
 
-            // 1. Căutăm butonul de start al meniului ("Despre")
-            for (Element a : doc.select("a")) {
-                if (a.text().trim().equalsIgnoreCase("Despre")) {
+              for(Element e : elemente){
+                  String line = e.text().trim();
+                  if(!line.isEmpty())
+                      liniiMeniu.add(line);
+              }
 
-                    // 2. Odată găsit, luăm lista mamă (ul-ul principal) în care se află
-                    Element ulPrincipal = a.closest("ul");
-
-                    if (ulPrincipal != null) {
-                        // 3. Secretul: folosim "> li > a" ca să luăm DOAR nivelul principal, fără submeniuri!
-                        Elements linkuri = ulPrincipal.select("> li > a");
-
-                        for (Element link : linkuri) {
-                            String linie = link.text().trim();
-
-                            if (!linie.isEmpty() && linie.length() < 35) {
-                                liniiMeniu.add(linie);
-                            }
-                        }
-                    }
-                    // Oprim for-ul, ne-am făcut treaba
-                    break;
-                }
-            }
 
         } catch (Exception e) {
             System.out.println("Eroare la extragerea: " + e.getMessage());
